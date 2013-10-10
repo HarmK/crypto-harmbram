@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/Harm/Documents/APACHE/commons-codec-1.8-bin/commons-codec-1.8/commons-codec-1.8.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Harm/Documents/APACHE/commons-compress-1.5-bin/commons-compress-1.5/commons-compress-1.5.jar"/>
+	<classpathentry kind="lib" path="bcprov-jdk15on-149.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

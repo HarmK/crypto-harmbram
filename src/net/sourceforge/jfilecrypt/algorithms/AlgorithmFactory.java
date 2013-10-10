@@ -31,6 +31,7 @@ public class AlgorithmFactory {
 		addAlgorithm("TripleDES", new JCEAlgorithm("TripleDES"));
 		addAlgorithm("AES", new JCEAlgorithm("AES"));
 		addAlgorithm("RC4", new JCEAlgorithm("RC4"));
+		addAlgorithm("TwoFish", new TwoFishAlgorithm());
 	}
 
     /**
