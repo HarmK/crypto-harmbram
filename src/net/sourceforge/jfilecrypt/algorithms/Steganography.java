@@ -1,3 +1,5 @@
+package net.sourceforge.jfilecrypt.algorithms;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -7,32 +9,9 @@ import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
 
-public class Main {
-	public static void main(String[] args) {
-		
-		System.out.println("Stegabram!!");
-		
-		File inputFile = new File(args[0]);
-		File keyFile = new File(args[1]);
-		File outputFile = new File(args[2]);
-		
-		boolean encrypt = args[3].equals("-e");
-		
-		try {
-			if (encrypt) {
-				encrypt(inputFile, keyFile, outputFile);
-			} else {
-				decrypt(outputFile, inputFile);
-			}
-		}
-		catch (IOException ex) {
-			ex.printStackTrace();
-		}
-		
-		System.out.println("DONE!");
-	}
-	
-	private static void encrypt(File inputFile, File keyFile, File outputFile) throws IOException {
+public class Steganography {
+
+	public static void encrypt(File inputFile, File keyFile, File outputFile) throws IOException {
 		FileInputStream in = new FileInputStream(inputFile);
 		byte[] input = new byte[(int) (inputFile.length())];
 		System.out.println(in.read(input));
@@ -134,7 +113,7 @@ public class Main {
 		ImageIO.write(img, "png", outputFile);
 	}
 
-	private static void decrypt(File inputFile, File outputFile) throws IOException {
+	public static void decrypt(File inputFile, File outputFile) throws IOException {
 		BufferedImage img   = ImageIO.read(inputFile);
 		int p1,p2;
 		
@@ -229,4 +208,5 @@ public class Main {
 			}
 		}
 	}
+	
 }
