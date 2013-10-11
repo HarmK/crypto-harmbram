@@ -69,13 +69,16 @@ public class JCEAlgorithm implements Algorithm {
         return -1;
     }
 
-    public boolean initDecrypt(String password) {
-        if (password == null || password.length() < 1) {
+    public boolean initDecrypt(String password) 
+    {
+        if (password == null || password.length() < 1) 
+        {
             Application.getController().displayError(Application.getResourceBundle().getString("password_not_null_title"),
                     Application.getResourceBundle().getString("password_not_null_message"));
             return false;
         }
-        try {
+        try 
+        {
             cipher = Cipher.getInstance(getCipherInitString());
             Key k = new SecretKeySpec(PasswordUtil.getKeyWithRightLength(password, getKeyLength()).getBytes(), algName);
             if (!algName.equalsIgnoreCase("RC4")) {

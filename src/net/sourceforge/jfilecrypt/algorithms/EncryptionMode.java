@@ -18,6 +18,7 @@ public enum EncryptionMode {
                 return MODE_STREAM;
             }
         }
+        
         for(int i = 0; i < modes.length; i++){
             if(modes[i] == MODE_STREAM){
                 return MODE_BLOCK;

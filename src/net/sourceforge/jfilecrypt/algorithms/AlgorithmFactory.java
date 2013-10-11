@@ -30,8 +30,10 @@ public class AlgorithmFactory {
 		addAlgorithm("DES", new JCEAlgorithm("DES"));
 		addAlgorithm("TripleDES", new JCEAlgorithm("TripleDES"));
 		addAlgorithm("AES", new JCEAlgorithm("AES"));
-		addAlgorithm("RC4", new JCEAlgorithm("RC4"));
-		addAlgorithm("TwoFish", new TwoFishAlgorithm());
+		addAlgorithm("RC4", new JCEAlgorithm("RC4")); 
+		addAlgorithm("TwoFish", new BCAlgorithm("TwoFish"));
+		addAlgorithm("SkipJack", new BCAlgorithm("SkipJack"));
+		addAlgorithm("Salsa20", new BCAlgorithm("Salsa20"));
 	}
 
     /**

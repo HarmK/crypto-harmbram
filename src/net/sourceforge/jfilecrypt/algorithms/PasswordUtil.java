@@ -13,7 +13,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class PasswordUtil {
 
-    /**
+	/**
      * returns a String with the right length for encryption.
      *
      * @param key
@@ -26,7 +26,6 @@ public class PasswordUtil {
                 return key;
             } else {
                 MessageDigest md = null;
-
                 try {
                     md = MessageDigest.getInstance("SHA-1");
                 } catch (NoSuchAlgorithmException e) {

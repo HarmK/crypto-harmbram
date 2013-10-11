@@ -42,9 +42,10 @@ public class Model {
      * Register a
      * @see Controller before you do anything else!
      */
+    
     protected Model() {
-        bundle = Application.getResourceBundle();
-        algFactory = AlgorithmFactory.getDefaultAlgorithmFactory();
+    	bundle = Application.getResourceBundle();
+    	algFactory = AlgorithmFactory.getDefaultAlgorithmFactory();
     }
 
     /**
@@ -82,7 +83,7 @@ public class Model {
      * Returns a FileList of the files to en-/decrypt.
      */
     protected FileList getFileList() {
-        return fileList;
+    	return fileList;
     }
 
     /**
@@ -90,7 +91,7 @@ public class Model {
      * password.
      */
     protected void setPassword(String password) {
-        this.password = password;
+    	this.password = password;
     }
 
     /**
@@ -387,12 +388,15 @@ public class Model {
                     // <editor-fold defaultstate="collapsed" desc="comment">
                     File archive = fileList.get(f);
                     String arname = archive.getName();
-                    String arsuf = arname.substring(arname.lastIndexOf('.'), arname.length());
-
+                    String arsuf = "";
+                    int dotpos = arname.lastIndexOf('.');
+                    if (dotpos > 0) {
+                    	arsuf = arname.substring(dotpos);
+                    } 
                     Algorithm alg = null;
                     Algorithm algs[] = algFactory.getAlgorithms();
                     for (int i = 0; i < algs.length; i++) {
-                        if (algs[i].getSuffix().equalsIgnoreCase(arsuf)) {
+                    	if (algs[i].getSuffix().equalsIgnoreCase(arsuf)) {
                             alg = algs[i];
                             break;
                         }
