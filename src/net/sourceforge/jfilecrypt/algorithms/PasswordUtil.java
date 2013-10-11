@@ -17,7 +17,7 @@ public class PasswordUtil {
      * returns a String with the right length for encryption.
      *
      * @param key
-     *            the passowrd to be rightsized.
+     *            the password to be rightsized.
      * @return a String with the right length.
      */
     public static String getKeyWithRightLength(final String key, int keyLength) {

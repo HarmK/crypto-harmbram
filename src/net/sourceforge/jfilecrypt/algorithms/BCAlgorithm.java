@@ -6,6 +6,7 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.util.HashMap;
@@ -45,12 +46,12 @@ public class BCAlgorithm implements Algorithm {
 	public BCAlgorithm(String name) {
 		super();
 		algName = name;
-		if (algName.equals("SkipJack")) {
+		if (algName.equalsIgnoreCase("SkipJack")) {
 			keyLength = 8;
-		} else if (algName.equals("TwoFish")) {
+		} else if (algName.equalsIgnoreCase("TwoFish")) {
 			keyLength = 16;
-		} else if (algName.equals("Salsa20")) {
-			keyLength = 32;
+		} else if (algName.equalsIgnoreCase("Salsa20")) {
+			keyLength = 16;
 		}
 	}
 
@@ -69,7 +70,7 @@ public class BCAlgorithm implements Algorithm {
 		// TODO add
 		return "Bouncy Castle";
 	}
-
+	
 	@Override
 	public int getBlockSize() {
 		// TODO Auto-generated method stub
@@ -97,18 +98,16 @@ public class BCAlgorithm implements Algorithm {
 	@Override
 	public int getKeyLength() {
 		// TODO Auto-generated method stub
-		return 10;
+		return keyLength;
 	}
 
 	@Override
 	public String getLicense() {
-		// TODO Auto-generated method stub
-		return null;
+		return "MIT";
 	}
 
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return algName;
 	}
 
@@ -119,8 +118,7 @@ public class BCAlgorithm implements Algorithm {
 
 	@Override
 	public String getWebsite() {
-		// TODO Auto-generated method stub
-		return null;
+		return "http://www.bouncycastle.org";
 	}
 
 	@Override
@@ -133,14 +131,12 @@ public class BCAlgorithm implements Algorithm {
 			return false;
 		}
 		try {
-			cipher = Cipher.getInstance(getCipherInitString(), new BouncyCastleProvider());
+			cipher = Cipher.getInstance(getCipherInitString(),new BouncyCastleProvider());
 			Key k = new SecretKeySpec(PasswordUtil.getKeyWithRightLength(password, getKeyLength()).getBytes(), algName);
-			if (!algName.equalsIgnoreCase("Salsa20")) {
+			
 				IvParameterSpec ivs = new IvParameterSpec(getIV());
 				cipher.init(Cipher.DECRYPT_MODE, k, ivs);
-			} else {
-				cipher.init(Cipher.DECRYPT_MODE, k);
-			}
+			
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			return false;
@@ -153,7 +149,7 @@ public class BCAlgorithm implements Algorithm {
 		} catch (InvalidAlgorithmParameterException e) {
 			e.printStackTrace();
 			return false;
-		}
+		} 
 
 		return true;
 	}
@@ -169,12 +165,11 @@ public class BCAlgorithm implements Algorithm {
 		try {
 			cipher = Cipher.getInstance(getCipherInitString(), new BouncyCastleProvider());
 			Key k = new SecretKeySpec(PasswordUtil.getKeyWithRightLength(password, getKeyLength()).getBytes(), algName);
-			if (!algName.equalsIgnoreCase("Salsa20")) {
+			System.out.println(PasswordUtil.getKeyWithRightLength(password, getKeyLength()).getBytes());
+			
 				IvParameterSpec ivs = new IvParameterSpec(getIV());
 				cipher.init(Cipher.ENCRYPT_MODE, k, ivs);
-			} else {
-				cipher.init(Cipher.ENCRYPT_MODE, k);
-			}
+			
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			return false;
@@ -191,33 +186,32 @@ public class BCAlgorithm implements Algorithm {
 		return true;
 	}
 	
+	private byte[] trimBytes(int length)
+	{
+		 byte res[] = new byte[length];
+         for (int i = 0; i < res.length; i++) {
+             res[i] = IV[i % IV.length];
+         }
+         return res;
+	}
 
 	private byte[] getIV() {
 		if (algName.equalsIgnoreCase("TwoFish")) {
-            byte res[] = new byte[16];
-            for (int i = 0; i < res.length; i++) {
-                res[i] = IV[i % IV.length];
-            }
-            return res;
+			return trimBytes(16);
 		}else if (algName.equalsIgnoreCase("SkipJack")) {
-            byte res[] = new byte[8];
-            for (int i = 0; i < res.length; i++) {
-                res[i] = IV[i % IV.length];
-            }
-            return res;
+			return trimBytes(8);
+		}else if (algName.equalsIgnoreCase("Salsa20")) {
+			return trimBytes(8);
 		}
 		return IV;
-		
-
-		// return IV;
 	}
 
 	private String getCipherInitString() {
-		if (algName.equals("SkipJack")) {
+		if (algName.equalsIgnoreCase("SkipJack")) {
 			return "SKIPJACK/CBC/PKCS5Padding";
-		} else if (algName.equals("TwoFish")) {
+		} else if (algName.equalsIgnoreCase("TwoFish")) {
 			return "TWOFISH/CBC/PKCS5Padding";
-		} else if (algName.equals("Salsa20")) {
+		} else if (algName.equalsIgnoreCase("Salsa20")) {
 			return "Salsa20"; // stream
 		} else {
 			return algName;
