@@ -16,27 +16,31 @@ public class Main {
 		File keyFile = new File(args[1]);
 		File outputFile = new File(args[2]);
 		
-		boolean encrypt = true;//args[3].equals("-e");
+		boolean encrypt = args[3].equals("-e");
 		
 		try {
 			if (encrypt) {
 				encrypt(inputFile, keyFile, outputFile);
 			} else {
-				decrypt(outputFile, keyFile, new File("/Users/brambuurlage/Desktop/hoi.pdf"));
+				decrypt(outputFile, inputFile);
 			}
 		}
 		catch (IOException ex) {
 			ex.printStackTrace();
 		}
+		
+		System.out.println("DONE!");
 	}
 	
 	private static void encrypt(File inputFile, File keyFile, File outputFile) throws IOException {
 		FileInputStream in = new FileInputStream(inputFile);
 		byte[] input = new byte[(int) (inputFile.length())];
+		System.out.println(in.read(input));
 		
-		for (int i=0; i<inputFile.length(); i+=4096) {
-			in.read(input, i, (int)Math.min(4096, inputFile.length()-i));
-		}
+		//for (int i=0; i<inputFile.length(); i+=4096) {
+		//	in.read(b)
+		//	in.read(input, i, (int)Math.min(4096, inputFile.length()-i));
+		//}
 		in.close();
 		
 		BufferedImage img   = ImageIO.read(keyFile);
@@ -44,7 +48,8 @@ public class Main {
 		long  pixelsAvailable = (img.getWidth()*img.getHeight()) - 2;
 		int   bitsPerPixel    = (int)Math.ceil(bitsToEncrypt/(float)pixelsAvailable); // the amount of bits we have to store per pixel to store the input evenly over the whole image
 		int[] bitsPerChannel  = new int[] {0,0,0};
-		int p;
+		
+		int p = 0;
 		
 		for (int i=0; i<bitsPerPixel; ++i) bitsPerChannel[i%3]++;
 		
@@ -78,7 +83,6 @@ public class Main {
 		buf.putInt(input.length);
 		buf.put(input);
 		buf.rewind();
-		input = buf.array();
 		
 		System.out.println("bits per pixel: " + bitsPerPixel + ":" + bitsPerChannel[0] + "," + bitsPerChannel[1] + "," + bitsPerChannel[2]);
 		System.out.println("total bytes: " + input.length);
@@ -87,22 +91,22 @@ public class Main {
 		 * Step 3: Replace pixels with data :)
 		 */
 		while (next_input_bit < bitsToEncrypt) {
-			p = img.getRGB(next_image_pixel%img.getWidth(), next_image_pixel/img.getWidth());
+			p = img.getRGB(next_image_pixel%img.getWidth(), 
+						   next_image_pixel/img.getWidth());
 			byte[] pixel = new byte[] {
-				(byte)((p >> 16) & 0x00), 
-				(byte)((p >>  8) & 0x00), 
-				(byte)((p >>  0) & 0x00),
-				
+				(byte)((p >> 16) & 0xff), 
+				(byte)((p >>  8) & 0xff), 
+				(byte)((p >>  0) & 0xff),
 				(byte)((p >> 24) & 0xff),
 			};
 			
 			for (int c=0; c<3; ++c) {
 				for (int b=0; b<bitsPerChannel[c]; ++b) {
-					byte current = (byte) (input[next_input_bit/8]);
+					byte current = buf.get(next_input_bit/8);
 					
 					int org_bit = ((pixel[c]>>b)&0x01);
-					int new_bit = ((current>>next_input_bit)&0x01);
-					pixel[c] ^= (org_bit ^ new_bit) << (b+4);
+					int new_bit = ((current>>(next_input_bit%8))&0x01);
+					pixel[c] ^= ((org_bit ^ new_bit) << b);
 					
 					next_input_bit++;
 					if (next_input_bit >= bitsToEncrypt) {
@@ -115,11 +119,11 @@ public class Main {
 				}
 			}
 	
-			img.setRGB(next_image_pixel%img.getWidth(), next_image_pixel/img.getWidth(),
-					(pixel[3] << 24) |
-					(pixel[0] << 16) |
-					(pixel[1] <<  8) |
-					(pixel[2] <<  0));
+			int col = (pixel[3] << 24) |
+					  (pixel[0] << 16) |
+					  (pixel[1] <<  8) |
+					  (pixel[2] <<  0);
+			img.setRGB(next_image_pixel%img.getWidth(), next_image_pixel/img.getWidth(), col);
 			next_image_pixel++;
 		}
 		
@@ -130,7 +134,7 @@ public class Main {
 		ImageIO.write(img, "png", outputFile);
 	}
 
-	private static void decrypt(File inputFile, File keyFile, File outputFile) throws IOException {
+	private static void decrypt(File inputFile, File outputFile) throws IOException {
 		BufferedImage img   = ImageIO.read(inputFile);
 		int p1,p2;
 		
@@ -153,7 +157,7 @@ public class Main {
 		int next_output_bit = 0;
 		int written_bytes = 0;
 		int size = -4;
-		boolean done = false;
+
 		FileOutputStream out = new FileOutputStream(outputFile);
 		ByteBuffer lengthBuffer = ByteBuffer.allocate(4);
 		
@@ -171,18 +175,19 @@ public class Main {
 			
 			for (int c=0; c<3; ++c) {
 				for (int b=0; b<bitsPerChannel[c]; ++b) {
-					
-					System.out.println((((pixel[c] >> b)&0x01) << next_output_bit));
+					if (written_bytes >= size && size >= 0) {
+						out.close();
+						return;
+					}
 					
 					current |= (((pixel[c] >> b)&0x01) << next_output_bit);
-					if (next_output_bit == 7) {
+					if (next_output_bit >= 7) {
 						next_output_bit = 0;
 						
 						if (size < 0) {
 							lengthBuffer.put(current);
 							size ++;
 							
-							//expected = 2491693
 							if (size == 0) {
 								lengthBuffer.rewind();
 								size = lengthBuffer.getInt();
