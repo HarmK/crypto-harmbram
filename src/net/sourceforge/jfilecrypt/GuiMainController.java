@@ -5,6 +5,8 @@ import net.sourceforge.jfilecrypt.ui.AboutFrame;
 import net.sourceforge.jfilecrypt.ui.PasswordDialog;
 import net.sourceforge.jfilecrypt.ui.GuiMainView;
 import net.sourceforge.jfilecrypt.ui.OverwriteDialog;
+import net.sourceforge.jfilecrypt.ui.SteganoDialog;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -134,6 +136,10 @@ public class GuiMainController
             AboutFrame about = new AboutFrame(this);
             about.centerScreen();
             about.setVisible(true);
+        }else if(msg.equals("Stegano")) {
+                SteganoDialog steg = new SteganoDialog(this);
+                steg.centerScreen();
+                steg.setVisible(true);
         } else {
           displayError(bundle.getString("unknown_action_cmd_title"),
                   bundle.getString("unknown_action_cmd_text") + ": " + msg);

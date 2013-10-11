@@ -52,6 +52,7 @@ public class GuiMainView extends JFrameExtended {
     private JFileChooser   fchooser = new JFileChooser();
     private JButton        btAbout = new JButton();
     private JButton        btAlgInfo = new JButton();
+    private JButton        btStegano = new JButton();
     private JLabel         lbCmpLevel = new JLabel();
     
     /**
@@ -107,6 +108,11 @@ public class GuiMainView extends JFrameExtended {
                 btChoose_actionPerformed(e);
             }
         });
+        
+        
+        btStegano.setText("Steganography");
+        btStegano.setActionCommand("Stegano");
+        btStegano.addActionListener(controller);
         
         btEncrypt.setText(bundle.getString("encrypt"));
         btEncrypt.setActionCommand("encrypt");
@@ -200,7 +206,6 @@ public class GuiMainView extends JFrameExtended {
                 2, 1, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER,
                 GridBagConstraints.BOTH, new Insets(8,0,0,0), 0, 0
                 ));
-
         jpInput.add(lbCmpLevel, new GridBagConstraints(
                 0, 3, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER,
                 GridBagConstraints.BOTH, new Insets(8,0,0,-18), 0, 0
@@ -208,6 +213,10 @@ public class GuiMainView extends JFrameExtended {
         jpInput.add(cmbCompressionLevel, new GridBagConstraints(
                 1, 3, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER,
                 GridBagConstraints.BOTH, new Insets(8,0,0,8), 0, 0
+                ));
+        jpInput.add(btStegano, new GridBagConstraints(
+        		2, 3, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER,
+                GridBagConstraints.BOTH, new Insets(8,0,0,0), 0, 0
                 ));
         jpInput.add(Box.createRigidArea(new Dimension(btAlgInfo.getWidth(),5)), new GridBagConstraints(
                 2, 3, 1, 1, 1.0, 1.0, GridBagConstraints.CENTER,
